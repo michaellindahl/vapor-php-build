@@ -28,6 +28,53 @@ RUN mkdir -p ${BUILD_DIR}  \
     ${INSTALL_DIR}/share
 
 
+# Download and Uber H3 C & PHP Libraries
+
+ARG h3php
+ENV H3_BUILD_DIR=${BUILD_DIR}/h3
+ENV H3_PHP_BUILD_DIR=${BUILD_DIR}/php-h3
+
+RUN set -xe; \
+    git clone https://github.com/uber/h3.git ${H3_BUILD_DIR}; \
+    git clone https://github.com/neatlife/php-h3.git ${H3_PHP_BUILD_DIR}
+
+# Build C library of Uber H3 
+
+RUN yum update -y && yum install -y cmake3
+
+WORKDIR ${H3_BUILD_DIR}/
+
+RUN set -xe \
+    && cmake -DBUILD_SHARED_LIBS=ON . \
+    && make -j4 \
+    && make install
+
+# Verify that H3 Installed by running comamnd 
+# RUN ./bin/h3ToGeoBoundary --index 8a2a1072b59ffff
+
+# Build PHP Library of Uber H3
+
+RUN yum install -y php73-devel
+
+WORKDIR  ${H3_PHP_BUILD_DIR}/
+
+RUN set -xe \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install
+
+## Libraries have been installed in:
+## /tmp/build/php-h3/modules
+
+# Verify that H3 PHP Library is installed
+
+# RUN sudo php -d extension=/usr/lib64/php/7.3/modules/h3.so
+# RUN php -r '$date=date("Y-m-d H:i:s"); echo $date."\n";';
+# RUN php -r '$index = geoToH3(40.689167, -74.044444, 10); echo "index: $index\n";';
+# RUN php -r '$geo = h3ToGeo($index); echo "geo: $geo\n";';
+# RUN php -r '$res = h3GetResolution($index); echo "res: $res\n\n";';
+
 # Build ZLIB (https://github.com/madler/zlib/releases)
 
 ARG zlib
