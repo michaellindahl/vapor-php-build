@@ -51,91 +51,6 @@ RUN cp ${H3_BUILD_DIR}/lib/libh3.* /opt/vapor/lib/;
 
 # Verifed that Vapor deploys this via <?php exec('geoToH3 --resolution 10 --latitude 40.689167 --longitude -74.044444'); ?>
 
-# Download and Build PHP Library of Uber H3
-
-ENV H3_PHP_BUILD_DIR=${BUILD_DIR}/php-h3
-
-RUN set -xe; \
-    git clone https://github.com/neatlife/php-h3.git ${H3_PHP_BUILD_DIR}
-
-RUN yum install -y php73-devel
-
-WORKDIR ${H3_PHP_BUILD_DIR}/
-
-RUN set -xe \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install 
-
-##### Output:
-
-# + make
-# /bin/sh /tmp/build/php-h3/libtool --mode=compile cc -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/build/php-h3 -DPHP_ATOM_INC -I/tmp/build/php-h3/include -I/tmp/build/php-h3/main -I/tmp/build/php-h3 -I/usr/include/php/7.3/php -I/usr/include/php/7.3/php/main -I/usr/include/php/7.3/php/TSRM -I/usr/include/php/7.3/php/Zend -I/usr/include/php/7.3/php/ext -I/usr/include/php/7.3/php/ext/date/lib  -DHAVE_CONFIG_H  -g -O2 -lh3 -std=c99  -c /tmp/build/php-h3/distance.c -o distance.lo 
-# libtool: compile:  cc -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/build/php-h3 -DPHP_ATOM_INC -I/tmp/build/php-h3/include -I/tmp/build/php-h3/main -I/tmp/build/php-h3 -I/usr/include/php/7.3/php -I/usr/include/php/7.3/php/main -I/usr/include/php/7.3/php/TSRM -I/usr/include/php/7.3/php/Zend -I/usr/include/php/7.3/php/ext -I/usr/include/php/7.3/php/ext/date/lib -DHAVE_CONFIG_H -g -O2 -lh3 -std=c99 -c /tmp/build/php-h3/distance.c  -fPIC -DPIC -o .libs/distance.o
-# /bin/sh /tmp/build/php-h3/libtool --mode=compile cc -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/build/php-h3 -DPHP_ATOM_INC -I/tmp/build/php-h3/include -I/tmp/build/php-h3/main -I/tmp/build/php-h3 -I/usr/include/php/7.3/php -I/usr/include/php/7.3/php/main -I/usr/include/php/7.3/php/TSRM -I/usr/include/php/7.3/php/Zend -I/usr/include/php/7.3/php/ext -I/usr/include/php/7.3/php/ext/date/lib  -DHAVE_CONFIG_H  -g -O2 -lh3 -std=c99  -c /tmp/build/php-h3/h3.c -o h3.lo 
-# libtool: compile:  cc -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/build/php-h3 -DPHP_ATOM_INC -I/tmp/build/php-h3/include -I/tmp/build/php-h3/main -I/tmp/build/php-h3 -I/usr/include/php/7.3/php -I/usr/include/php/7.3/php/main -I/usr/include/php/7.3/php/TSRM -I/usr/include/php/7.3/php/Zend -I/usr/include/php/7.3/php/ext -I/usr/include/php/7.3/php/ext/date/lib -DHAVE_CONFIG_H -g -O2 -lh3 -std=c99 -c /tmp/build/php-h3/h3.c  -fPIC -DPIC -o .libs/h3.o
-###### Lots of warnings. See https://github.com/neatlife/php-h3/issues/4
-# /bin/sh /tmp/build/php-h3/libtool --mode=link cc -DPHP_ATOM_INC -I/tmp/build/php-h3/include -I/tmp/build/php-h3/main -I/tmp/build/php-h3 -I/usr/include/php/7.3/php -I/usr/include/php/7.3/php/main -I/usr/include/php/7.3/php/TSRM -I/usr/include/php/7.3/php/Zend -I/usr/include/php/7.3/php/ext -I/usr/include/php/7.3/php/ext/date/lib  -DHAVE_CONFIG_H  -g -O2 -lh3 -std=c99   -o h3.la -export-dynamic -avoid-version -prefer-pic -module -rpath /tmp/build/php-h3/modules  distance.lo h3.lo 
-# libtool: link: cc -shared  -fPIC -DPIC  .libs/distance.o .libs/h3.o   -lh3  -O2   -Wl,-soname -Wl,h3.so -o .libs/h3.so
-# libtool: link: ( cd ".libs" && rm -f "h3.la" && ln -s "../h3.la" "h3.la" )
-# /bin/sh /tmp/build/php-h3/libtool --mode=install cp ./h3.la /tmp/build/php-h3/modules
-# libtool: install: cp ./.libs/h3.so /tmp/build/php-h3/modules/h3.so
-# libtool: install: cp ./.libs/h3.lai /tmp/build/php-h3/modules/h3.la
-# libtool: finish: PATH="/opt/vapor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/sbin" ldconfig -n /tmp/build/php-h3/modules
-# ----------------------------------------------------------------------
-# Libraries have been installed in:
-#    /tmp/build/php-h3/modules
-#
-# If you ever happen to want to link against installed libraries
-# in a given directory, LIBDIR, you must either use libtool, and
-# specify the full pathname of the library, or use the `-LLIBDIR'
-# flag during linking and do at least one of the following:
-#    - add LIBDIR to the `LD_LIBRARY_PATH' environment variable
-#      during execution
-#    - add LIBDIR to the `LD_RUN_PATH' environment variable
-#      during linking
-#    - use the `-Wl,-rpath -Wl,LIBDIR' linker flag
-#    - have your system administrator add LIBDIR to `/etc/ld.so.conf'
-#
-# See any operating system documentation about shared libraries for
-# more information, such as the ld(1) and ld.so(8) manual pages.
-# ----------------------------------------------------------------------
-#
-# Build complete.
-# Don't forget to run 'make test'.
-#
-# + make install
-# Installing shared extensions:     /usr/lib64/php/7.3/modules/
-
-# This moves h3.so
-RUN cp ${H3_PHP_BUILD_DIR}/modules/* ${INSTALL_DIR}/bin
-
-#####  Debugging h3 build files:
-
-# RUN ls -la ${H3_PHP_BUILD_DIR}  ===>  h3.c h3.la h3.lo h3.php php_h3.h
-# RUN ls -la ${H3_PHP_BUILD_DIR}/modules  ===>  h3.so
-
-##### For reference This is the install output of Pear:
-
-# + make install PEAR_INSTALLER_URL=https://github.com/pear/pearweb_phars/raw/master/install-pear-nozlib.phar
-# Installing shared extensions:     /opt/vapor/lib/php/extensions/no-debug-zts-20190902/
-# Installing PHP CLI binary:        /opt/vapor/bin/
-# Installing PHP CLI man page:      /opt/vapor/php/man/man1/
-# Installing PHP FPM binary:        /opt/vapor/sbin/
-# Installing PHP FPM defconfig:     /opt/vapor/etc/
-# Installing PHP FPM man page:      /opt/vapor/php/man/man8/
-# Installing PHP FPM status page:   /opt/vapor/php/php/fpm/
-# Installing build environment:     /opt/vapor/lib/php/build/
-# Installing header files:          /opt/vapor/include/php/
-# Installing helper programs:       /opt/vapor/bin/
-#   program: phpize
-#   program: php-config
-# Installing man pages:             /opt/vapor/php/man/man1/
-#   page: phpize.1
-#   page: php-config.1
-# Installing PEAR environment:      /opt/vapor/lib/php/
-
 # Build ZLIB (https://github.com/madler/zlib/releases)
 
 ARG zlib
@@ -500,8 +415,6 @@ RUN set -xe \
         --with-pdo-pgsql=shared,${INSTALL_DIR} \
         --enable-intl=shared \
         --enable-opcache-file
-# configure: error: unrecognized options: --enable-h3
-#        --enable-h3
 
 RUN make -j $(nproc)
 
@@ -512,6 +425,23 @@ RUN set -xe; \
     { find ${INSTALL_DIR}/bin ${INSTALL_DIR}/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; }; \
     make clean; \
     cp php.ini-production ${INSTALL_DIR}/etc/php/php.ini
+
+# Download and Build PHP Library of Uber H3
+
+ENV H3_PHP_BUILD_DIR=${BUILD_DIR}/php-h3
+
+RUN set -xe; \
+    git clone https://github.com/neatlife/php-h3.git ${H3_PHP_BUILD_DIR}
+
+WORKDIR ${H3_PHP_BUILD_DIR}/
+
+RUN set -xe \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install
+
+# Verifed that Vapor deploys this via <?php var_dump(geoToH3(40.689167, -74.044444, 10)); ?>
 
 # RUN pecl install redis
 RUN pecl install -f redis
